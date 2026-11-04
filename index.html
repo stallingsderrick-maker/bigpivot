@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Big Pivot -- Contractor Marketplace</title>
+<style>
+  :root {
+    --navy: #1A355E;
+    --navy-dark: #0f1f38;
+    --gold: #B88620;
+    --gold-light: #d4a030;
+    --gray: #F5F7FA;
+    --gray-mid: #e2e8f0;
+    --text: #1a202c;
+    --text-light: #64748b;
+    --green: #16a34a;
+    --white: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); background: #fff; }
+
+  /* NAV */
+  nav { background: var(--navy); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .logo-mark { background: var(--gold); color: var(--navy); width: 36px; height: 36px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; }
+  .logo-text { color: white; font-size: 1.1rem; font-weight: 700; }
+  .logo-text span { color: var(--gold); }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.9rem; cursor: pointer; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+  .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+  .btn-ghost:hover { border-color: white; background: rgba(255,255,255,0.1); }
+  .btn-gold { background: var(--gold); color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
+  .btn-gold:hover { background: var(--gold-light); }
+
+  /* PAGE SECTIONS */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* LANDING */
+  .hero { background: var(--navy); padding: 80px 2rem; text-align: center; }
+  .hero h1 { color: white; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1rem; }
+  .hero h1 span { color: var(--gold); }
+  .hero p { color: rgba(255,255,255,0.75); font-size: 1.15rem; max-width: 580px; margin: 0 auto 2rem; }
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-hero-gold { background: var(--gold); color: white; border: none; padding: 14px 32px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+  .btn-hero-gold:hover { background: var(--gold-light); }
+  .btn-hero-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.6); padding: 14px 32px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-hero-outline:hover { border-color: white; background: rgba(255,255,255,0.1); }
+
+  .stats-bar { background: var(--gold); padding: 1rem 2rem; display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
+  .stat-item { text-align: center; color: white; }
+  .stat-item .num { font-size: 1.5rem; font-weight: 900; }
+  .stat-item .label { font-size: 0.75rem; opacity: 0.9; }
+
+  .section { padding: 60px 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-title { text-align: center; margin-bottom: 2.5rem; }
+  .section-title h2 { font-size: 2rem; font-weight: 800; color: var(--navy); }
+  .section-title p { color: var(--text-light); margin-top: 0.5rem; font-size: 1rem; }
+
+  .trades-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
+  .trade-card { background: var(--gray); border-radius: 12px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+  .trade-card:hover { border-color: var(--navy); background: white; box-shadow: 0 4px 16px rgba(26,53,94,0.12); }
+  .trade-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .trade-label { font-size: 0.85rem; font-weight: 600; color: var(--navy); }
+
+  .nojacklogs { background: var(--navy); padding: 60px 2rem; }
+  .nojacklogs-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+  .nojacklogs h2 { color: white; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .nojacklogs .sub { color: rgba(255,255,255,0.7); margin-bottom: 2rem; }
+  .reqs { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+  .req-item { background: rgba(255,255,255,0.08); border-radius: 10px; padding: 1.25rem; }
+  .req-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .req-title { color: var(--gold); font-weight: 700; font-size: 0.9rem; margin-bottom: 0.25rem; }
+  .req-desc { color: rgba(255,255,255,0.65); font-size: 0.8rem; }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
+  .step { text-align: center; }
+  .step-num { width: 56px; height: 56px; background: var(--navy); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; margin: 0 auto 1rem; }
+  .step h3 { color: var(--navy); font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .step p { color: var(--text-light); font-size: 0.9rem; }
+
+  .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .testimonial { background: var(--gray); border-radius: 12px; padding: 1.5rem; border-left: 4px solid var(--gold); }
+  .testimonial p { color: var(--text); font-size: 0.95rem; font-style: italic; margin-bottom: 1rem; }
+  .t-author { display: flex; align-items: center; gap: 0.75rem; }
+  .t-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; }
+  .t-name { font-weight: 700; font-size: 0.9rem; }
+  .t-role { color: var(--text-light); font-size: 0.8rem; }
+
+  footer { background: var(--navy-dark); padding: 2rem; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+
+  /* CONTRACTORS PAGE */
+  .page-header { background: var(--navy); padding: 2.5rem 2rem; }
+  .page-header h1 { color: white; font-size: 1.8rem; font-weight: 800; }
+  .page-header p { color: rgba(255,255,255,0.7); margin-top: 0.25rem; }
+
+  .search-bar { background: white; padding: 1.5rem 2rem; display: flex; gap: 1rem; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-wrap: wrap; }
+  .search-bar select, .search-bar input { padding: 10px 14px; border: 1px solid var(--gray-mid); border-radius: 6px; font-size: 0.9rem; background: var(--gray); flex: 1; min-width: 140px; }
+  .search-bar button { background: var(--navy); color: white; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+  .contractors-layout { display: flex; gap: 1.5rem; padding: 1.5rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .filters { width: 220px; flex-shrink: 0; }
+  .filter-box { background: var(--gray); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+  .filter-box h4 { font-size: 0.85rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+  .filter-box label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text); margin-bottom: 0.4rem; cursor: pointer; }
+  .filter-box input[type=checkbox] { accent-color: var(--navy); }
+  .toggle-wrap { display: flex; align-items: center; justify-content: space-between; }
+  .toggle { width: 40px; height: 22px; background: var(--navy); border-radius: 11px; position: relative; cursor: pointer; }
+  .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 2px; right: 2px; transition: right 0.2s; }
+
+  .contractor-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; align-content: start; }
+  .c-card { background: white; border-radius: 12px; border: 1px solid var(--gray-mid); padding: 1.25rem; transition: box-shadow 0.2s; }
+  .c-card:hover { box-shadow: 0 4px 20px rgba(26,53,94,0.12); }
+  .c-card-top { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .c-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: white; flex-shrink: 0; }
+  .c-info .name { font-weight: 700; font-size: 0.95rem; }
+  .c-info .rate { color: var(--text-light); font-size: 0.8rem; }
+  .c-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .badge { padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+  .badge-trade { background: #dbeafe; color: #1e40af; }
+  .badge-avail { background: #dcfce7; color: #15803d; }
+  .badge-gov { background: #fef9c3; color: #854d0e; }
+  .stars { color: var(--gold); font-size: 0.85rem; }
+  .c-rating { display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
+  .c-rating .num { font-weight: 700; }
+  .c-rating .cnt { color: var(--text-light); }
+  .c-btns { display: flex; gap: 0.5rem; }
+  .btn-sm-navy { background: var(--navy); color: white; border: none; padding: 7px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; flex: 1; }
+  .btn-sm-outline { background: transparent; color: var(--navy); border: 1px solid var(--navy); padding: 7px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; flex: 1; }
+
+  /* PROFILE PAGE */
+  .profile-header { background: var(--navy); padding: 2.5rem 2rem; }
+  .profile-header-inner { max-width: 1000px; margin: 0 auto; display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+  .profile-big-avatar { width: 90px; height: 90px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: white; flex-shrink: 0; }
+  .profile-info h1 { color: white; font-size: 1.6rem; font-weight: 800; }
+  .profile-info .trade { color: var(--gold); font-weight: 600; margin: 0.25rem 0; }
+  .profile-info .rating-row { display: flex; align-items: center; gap: 0.5rem; }
+  .profile-info .stars { font-size: 1rem; }
+  .profile-info .r-num { color: white; font-weight: 700; }
+  .profile-info .r-cnt { color: rgba(255,255,255,0.6); font-size: 0.85rem; }
+  .verify-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+  .vbadge { background: rgba(22,163,74,0.2); color: #4ade80; border: 1px solid rgba(74,222,128,0.4); padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
+  .profile-body { max-width: 1000px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; }
+  .profile-main { display: flex; flex-direction: column; gap: 1.5rem; }
+  .profile-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .card { background: white; border: 1px solid var(--gray-mid); border-radius: 12px; padding: 1.25rem; }
+  .card h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--gray-mid); }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tag { background: var(--gray); color: var(--navy); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+  .review { padding: 0.75rem 0; border-bottom: 1px solid var(--gray-mid); }
+  .review:last-child { border-bottom: none; }
+  .review-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+  .rev-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+  .rev-name { font-weight: 600; font-size: 0.85rem; }
+  .rev-date { color: var(--text-light); font-size: 0.75rem; margin-left: auto; }
+  .rev-text { color: var(--text); font-size: 0.85rem; }
+  .sidebar-rate { text-align: center; padding: 1rem; background: var(--gray); border-radius: 8px; margin-bottom: 0.75rem; }
+  .sidebar-rate .amount { font-size: 1.6rem; font-weight: 900; color: var(--navy); }
+  .sidebar-rate .per { color: var(--text-light); font-size: 0.85rem; }
+  .btn-quote { width: 100%; background: var(--gold); color: white; border: none; padding: 14px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 0.75rem; }
+  .quick-stat { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--gray-mid); font-size: 0.85rem; }
+  .quick-stat .qs-label { color: var(--text-light); }
+  .quick-stat .qs-val { font-weight: 700; color: var(--navy); }
+  .avail-row { display: flex; justify-content: space-between; padding: 0.3rem 0; font-size: 0.85rem; }
+  .avail-row .day { color: var(--text-light); }
+  .avail-row .hours { font-weight: 600; }
+  .portfolio-item { background: var(--gray); border-radius: 8px; padding: 0.75rem; margin-top: 0.5rem; }
+  .portfolio-item .p-title { font-weight: 700; font-size: 0.9rem; color: var(--navy); }
+  .portfolio-item .p-desc { color: var(--text-light); font-size: 0.8rem; margin-top: 0.25rem; }
+  .portfolio-item .p-date { color: var(--gold); font-size: 0.75rem; margin-top: 0.25rem; font-weight: 600; }
+
+  /* POST JOB */
+  .postjob-wrap { max-width: 680px; margin: 2rem auto; padding: 0 2rem; }
+  .progress-bar { display: flex; gap: 0; margin-bottom: 2rem; }
+  .prog-step { flex: 1; padding: 10px; text-align: center; font-size: 0.8rem; font-weight: 600; border-bottom: 3px solid var(--gray-mid); color: var(--text-light); }
+  .prog-step.active { border-color: var(--navy); color: var(--navy); }
+  .prog-step.done { border-color: var(--green); color: var(--green); }
+  .form-step { display: none; }
+  .form-step.active { display: block; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 0.4rem; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--gray-mid); border-radius: 6px; font-size: 0.9rem; background: white; }
+  .form-group textarea { min-height: 100px; resize: vertical; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-actions { display: flex; justify-content: space-between; margin-top: 1.5rem; }
+  .btn-back { background: var(--gray); color: var(--navy); border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .btn-next { background: var(--navy); color: white; border: none; padding: 12px 28px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .btn-submit { background: var(--gold); color: white; border: none; padding: 12px 28px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+  .review-box { background: var(--gray); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+  .review-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); margin-bottom: 0.5rem; }
+  .review-box p { font-size: 0.95rem; color: var(--text); font-weight: 500; }
+  .success-state { text-align: center; padding: 3rem 1rem; }
+  .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+  .success-state h2 { color: var(--navy); font-size: 1.5rem; margin-bottom: 0.75rem; }
+  .success-state p { color: var(--text-light); max-width: 400px; margin: 0 auto 1.5rem; }
+
+  /* DASHBOARD */
+  .dashboard-wrap { display: flex; min-height: calc(100vh - 64px); }
+  .sidebar { width: 240px; background: var(--navy-dark); flex-shrink: 0; padding: 1.5rem 0; }
+  .sidebar-user { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem; }
+  .sidebar-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800; color: white; margin-bottom: 0.5rem; }
+  .sidebar-name { color: white; font-weight: 700; font-size: 0.95rem; }
+  .sub-badge { background: rgba(22,163,74,0.25); color: #4ade80; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; font-weight: 600; display: inline-block; margin-top: 0.3rem; }
+  .sidebar-nav a { display: flex; align-items: center; gap: 0.75rem; padding: 10px 1.25rem; color: rgba(255,255,255,0.65); font-size: 0.9rem; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+  .sidebar-nav a:hover { background: rgba(255,255,255,0.08); color: white; }
+  .sidebar-nav a.active { background: rgba(184,134,32,0.2); color: var(--gold); border-left: 3px solid var(--gold); }
+  .dash-main { flex: 1; background: var(--gray); padding: 1.5rem; }
+  .dash-title { font-size: 1.3rem; font-weight: 800; color: var(--navy); margin-bottom: 1.25rem; }
+  .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: white; border-radius: 10px; padding: 1.25rem; border-top: 3px solid var(--navy); }
+  .stat-card .sc-label { color: var(--text-light); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-card .sc-val { font-size: 2rem; font-weight: 900; color: var(--navy); margin: 0.25rem 0; }
+  .stat-card .sc-sub { font-size: 0.75rem; color: var(--green); font-weight: 600; }
+  .stat-card:nth-child(4) { border-color: var(--gold); }
+  .dash-section { background: white; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+  .dash-section h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem; }
+  .job-opp { border: 1px solid var(--gray-mid); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .job-opp:last-child { margin-bottom: 0; }
+  .job-opp-info { flex: 1; min-width: 200px; }
+  .job-opp-title { font-weight: 700; color: var(--navy); font-size: 0.95rem; }
+  .job-opp-meta { color: var(--text-light); font-size: 0.8rem; margin-top: 0.25rem; }
+  .job-opp-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+  .job-budget { font-weight: 700; color: var(--navy); font-size: 0.9rem; }
+  .job-deadline { background: #fef9c3; color: #854d0e; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+  .job-opp-btns { display: flex; gap: 0.5rem; }
+  .earnings-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .earnings-table th { text-align: left; padding: 8px 12px; background: var(--gray); color: var(--text-light); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .earnings-table td { padding: 10px 12px; border-bottom: 1px solid var(--gray-mid); }
+  .status-paid { background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .contractors-layout { flex-direction: column; padding: 1rem; }
+    .filters { width: 100%; }
+    .profile-body { grid-template-columns: 1fr; }
+    .profile-sidebar { order: -1; }
+    .form-row { grid-template-columns: 1fr; }
+    .dashboard-wrap { flex-direction: column; }
+    .sidebar { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="showPage('landing')">
+    <div class="logo-mark">BP</div>
+    <span class="logo-text">The Big <span>Pivot</span></span>
+  </div>
+  <div class="nav-links">
+    <a onclick="showPage('contractors')">Find Contractors</a>
+    <a onclick="showPage('postjob')">Post a Job</a>
+    <a onclick="showPage('landing')">How It Works</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-ghost">Sign In</button>
+    <button class="btn-gold" onclick="showPage('postjob')">Get Started</button>
+  </div>
+</nav>
+
+<!-- ═══ LANDING PAGE ═══════════════════════════════════════ -->
+<div id="page-landing" class="page active">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Stop Chasing Work.<br><span>Start Winning Contracts.</span></h1>
+    <p>Detroit's only quality-gated contractor marketplace. Every contractor is licensed, incorporated, and government-contract ready.</p>
+    <div class="hero-btns">
+      <button class="btn-hero-gold" onclick="showPage('postjob')">📋 Post a Job</button>
+      <button class="btn-hero-outline" onclick="showPage('contractors')">🔧 Find a Contractor</button>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item"><div class="num">500+</div><div class="label">Vetted Contractors</div></div>
+    <div class="stat-item"><div class="num">1,200+</div><div class="label">Jobs Completed</div></div>
+    <div class="stat-item"><div class="num">97%</div><div class="label">Client Satisfaction</div></div>
+    <div class="stat-item"><div class="num">Detroit</div><div class="label">Born & Operated</div></div>
+  </div>
+
+  <!-- Trade Categories -->
+  <div class="section">
+    <div class="section-title">
+      <h2>Find the Right Trade</h2>
+      <p>Every category. Every trade. All vetted.</p>
+    </div>
+    <div class="trades-grid">
+      <div class="trade-card" onclick="showPage('contractors')"><div class="trade-icon">❄️</div><div class="trade-label">HVAC</div></div>
+      <div class="trade-card" onclick="showPage('contractors')"><div class="trade-icon">⚡</div><div class="trade-label">Electrical</div></div>
+      <div class="trade-card" onclick="showPage('contractors')"><div class="trade-icon">🔧</div><div class="trade-label">Plumbing</div></div>
+      <div class="trade-card" onclick="showPage('contractors')"><div class="trade-icon">🌿</div><div class="trade-label">Landscaping</div></div>
+      <div class="trade-card" onclick="showPage('contractors')"><div class="trade-icon">🏠</div><div class="trade-label">Roofing</div></div>
+      <div class="trade-card" onclick="showPage('contractors')"><div class="trade-icon">🏗️</div><div class="trade-label">Concrete</div></div>
+      <div class="trade-card" onclick="showPage('contractors')"><div class="trade-icon">🧹</div><div class="trade-label">Cleaning</div></div>
+      <div class="trade-card" onclick="showPage('contractors')"><div class="trade-icon">🔨</div><div class="trade-label">General</div></div>
+    </div>
+  </div>
+
+  <!-- No Jack Legs -->
+  <div class="nojacklogs">
+    <div class="nojacklogs-inner">
+      <h2>🚫 No Jack Legs. Period.</h2>
+      <p class="sub">Every contractor on this platform meets all 5 requirements before they can take a single job.</p>
+      <div class="reqs">
+        <div class="req-item"><div class="req-icon">📜</div><div class="req-title">Licensed</div><div class="req-desc">Valid state trade license verified</div></div>
+        <div class="req-item"><div class="req-icon">🏢</div><div class="req-title">Incorporated</div><div class="req-desc">Must have an established LLC</div></div>
+        <div class="req-item"><div class="req-icon">🏦</div><div class="req-title">Business Bank</div><div class="req-desc">Real business account -- not CashApp</div></div>
+        <div class="req-item"><div class="req-icon">💰</div><div class="req-title">Financial Capacity</div><div class="req-desc">Can float Net-30/45 government terms</div></div>
+        <div class="req-item"><div class="req-icon">📄</div><div class="req-title">Capability Statement</div><div class="req-desc">Government-contract documentation ready</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works -->
+  <div class="section">
+    <div class="section-title">
+      <h2>How It Works</h2>
+      <p>Simple. Fast. Guaranteed.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><h3>Post Your Job</h3><p>Describe the work, your budget, and timeline. Takes 3 minutes.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>Get Matched</h3><p>We instantly match you with vetted contractors in your trade and area.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Work Gets Done</h3><p>Select the best bid. Pay securely through escrow. Release when satisfied.</p></div>
+    </div>
+  </div>
+
+  <!-- Testimonials -->
+  <div class="section" style="background:var(--gray); max-width:100%; padding:60px 2rem;">
+    <div style="max-width:900px; margin:0 auto;">
+      <div class="section-title"><h2>What Detroit Is Saying</h2></div>
+      <div class="testimonials">
+        <div class="testimonial">
+          <p>"Finally a platform that only has real contractors. I posted a job on a Friday, had 4 qualified bids by Monday morning. The escrow gave me peace of mind. This is how it should work."</p>
+          <div class="t-author"><div class="t-avatar" style="background:#1A355E">JW</div><div><div class="t-name">James W.</div><div class="t-role">Commercial Property Manager -- Detroit, MI</div></div></div>
+        </div>
+        <div class="testimonial">
+          <p>"As a master electrician, I was tired of competing with unlicensed guys. The Big Pivot only lets real professionals in. My first month I landed two commercial jobs worth $18,000."</p>
+          <div class="t-author"><div class="t-avatar" style="background:#B88620">MT</div><div><div class="t-name">Marcus T.</div><div class="t-role">Master Electrician -- Detroit, MI</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p style="color:var(--gold);font-weight:700;font-size:1rem;margin-bottom:0.5rem;">The Big Pivot</p>
+    <p>Detroit's Quality-Gated Contractor Marketplace &nbsp;|&nbsp; &copy; 2026 Sedart Trades LLC</p>
+  </footer>
+</div>
+
+<!-- ═══ CONTRACTORS PAGE ═════════════════════════════════ -->
+<div id="page-contractors" class="page">
+  <div class="page-header">
+    <h1>Find a Contractor</h1>
+    <p>500+ vetted, licensed, government-ready professionals in Detroit</p>
+  </div>
+  <div class="search-bar">
+    <select><option>All Trades</option><option>HVAC</option><option>Electrical</option><option>Plumbing</option><option>Landscaping</option><option>Roofing</option><option>Concrete</option><option>Cleaning</option><option>General Contracting</option></select>
+    <input type="text" placeholder="ZIP Code (e.g. 48226)">
+    <button>Search Contractors</button>
+  </div>
+  <div class="contractors-layout">
+    <div class="filters">
+      <div class="filter-box">
+        <h4>Trade Type</h4>
+        <label><input type="checkbox" checked> HVAC</label>
+        <label><input type="checkbox" checked> Electrical</label>
+        <label><input type="checkbox" checked> Plumbing</label>
+        <label><input type="checkbox" checked> Landscaping</label>
+        <label><input type="checkbox"> Roofing</label>
+        <label><input type="checkbox"> Concrete</label>
+        <label><input type="checkbox"> Cleaning</label>
+      </div>
+      <div class="filter-box">
+        <h4>Min Rating</h4>
+        <label><input type="radio" name="rating"> 4.5+ ⭐⭐⭐⭐⭐</label>
+        <label><input type="radio" name="rating" checked> 4.0+ ⭐⭐⭐⭐</label>
+        <label><input type="radio" name="rating"> Any rating</label>
+      </div>
+      <div class="filter-box">
+        <h4>Government Ready</h4>
+        <div class="toggle-wrap"><span style="font-size:0.85rem">Only Gov-Ready</span><div class="toggle"></div></div>
+      </div>
+    </div>
+    <div class="contractor-grid" id="contractor-grid"></div>
+  </div>
+</div>
+
+<!-- ═══ PROFILE PAGE ══════════════════════════════════════ -->
+<div id="page-profile" class="page">
+  <div class="profile-header">
+    <div class="profile-header-inner">
+      <div class="profile-big-avatar">MT</div>
+      <div class="profile-info">
+        <h1>Marcus Thompson</h1>
+        <div class="trade">⚡ Master Electrician</div>
+        <div class="rating-row" style="display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem;">
+          <span class="stars">★★★★★</span>
+          <span class="r-num" style="color:white;font-weight:700;">4.8</span>
+          <span class="r-cnt" style="color:rgba(255,255,255,0.6);font-size:0.85rem;">(47 reviews)</span>
+        </div>
+        <div class="verify-badges">
+          <span class="vbadge">✓ Licensed</span>
+          <span class="vbadge">✓ LLC</span>
+          <span class="vbadge">✓ Bonded</span>
+          <span class="vbadge">✓ Gov-Ready</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="profile-body">
+    <div class="profile-main">
+      <div class="card">
+        <h3>About</h3>
+        <p style="color:var(--text-light);font-size:0.95rem;line-height:1.6;">Licensed master electrician with 15+ years serving Detroit's commercial and government sector. Specializing in panel upgrades, commercial wiring, lighting retrofits, and generator installation. Fully licensed by Michigan LARA, LLC registered, and bonded. Comfortable with government procurement timelines and Net-30/45 payment terms. Served clients including DPS, City of Detroit facilities, and multiple school districts.</p>
+      </div>
+      <div class="card">
+        <h3>Skills & Specialties</h3>
+        <div class="tags">
+          <span class="tag">Commercial Wiring</span><span class="tag">Panel Upgrades</span><span class="tag">Generator Install</span>
+          <span class="tag">LED Retrofit</span><span class="tag">Government Contracts</span><span class="tag">Inspection Ready</span>
+          <span class="tag">Emergency Service</span><span class="tag">Code Compliance</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Client Reviews</h3>
+        <div class="review">
+          <div class="review-top"><div class="rev-avatar">JW</div><span class="rev-name">James W.</span><span style="color:var(--gold);font-size:0.85rem;">★★★★★</span><span class="rev-date">Oct 2026</span></div>
+          <div class="rev-text">Marcus did an entire panel upgrade for our 12,000 sqft commercial building. On time, on budget, zero issues with inspection. Already booked him for two more properties.</div>
+        </div>
+        <div class="review">
+          <div class="review-top"><div class="rev-avatar" style="background:var(--gold)">SR</div><span class="rev-name">Sarah R.</span><span style="color:var(--gold);font-size:0.85rem;">★★★★★</span><span class="rev-date">Sep 2026</span></div>
+          <div class="rev-text">Needed emergency rewiring at our Detroit 90/90 campus. Marcus had his crew there within 4 hours. Handled everything including city permits. Genuinely impressed.</div>
+        </div>
+        <div class="review">
+          <div class="review-top"><div class="rev-avatar" style="background:#059669">DM</div><span class="rev-name">David M.</span><span style="color:var(--gold);font-size:0.85rem;">★★★★☆</span><span class="rev-date">Aug 2026</span></div>
+          <div class="rev-text">Great work on our warehouse lighting retrofit. Finished 2 days ahead of schedule. Would have given 5 stars but communication could be a little faster during the bid phase.</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Portfolio</h3>
+        <div class="portfolio-item"><div class="p-title">Wayne County Community College -- Panel Upgrade</div><div class="p-desc">Complete 400A panel upgrade serving 3 buildings. Permitted and inspected. $42,000 project.</div><div class="p-date">Completed September 2026</div></div>
+        <div class="portfolio-item"><div class="p-title">Detroit Public Schools -- LED Retrofit (8 Classrooms)</div><div class="p-desc">Energy-efficient LED upgrade for DPS Mack Elementary. 40% energy reduction achieved.</div><div class="p-date">Completed July 2026</div></div>
+        <div class="portfolio-item"><div class="p-title">Commercial Warehouse -- Generator Install (48226)</div><div class="p-desc">Installed 150kW standby generator with automatic transfer switch. Fully permitted.</div><div class="p-date">Completed May 2026</div></div>
+      </div>
+    </div>
+    <div class="profile-sidebar">
+      <div class="card">
+        <div class="sidebar-rate"><div class="amount">$85 - $120</div><div class="per">per hour</div></div>
+        <button class="btn-quote" onclick="showPage('postjob')">Request a Quote</button>
+        <div class="quick-stat"><span class="qs-label">Jobs Completed</span><span class="qs-val">47</span></div>
+        <div class="quick-stat"><span class="qs-label">Rating</span><span class="qs-val">4.8 / 5.0</span></div>
+        <div class="quick-stat"><span class="qs-label">On-Time Rate</span><span class="qs-val">100%</span></div>
+        <div class="quick-stat"><span class="qs-label">Response Time</span><span class="qs-val">&lt; 2 hours</span></div>
+        <div class="quick-stat" style="border:none"><span class="qs-label">Member Since</span><span class="qs-val">Jan 2026</span></div>
+      </div>
+      <div class="card">
+        <h3>Availability</h3>
+        <div class="avail-row"><span class="day">Monday - Friday</span><span class="hours">7am - 6pm</span></div>
+        <div class="avail-row"><span class="day">Saturday</span><span class="hours">8am - 2pm</span></div>
+        <div class="avail-row"><span class="day">Sunday</span><span class="hours" style="color:var(--text-light)">Unavailable</span></div>
+        <div class="avail-row"><span class="day">Emergency</span><span class="hours" style="color:var(--green)">24/7</span></div>
+      </div>
+      <div class="card">
+        <h3>Service Area</h3>
+        <p style="color:var(--text-light);font-size:0.85rem;">Wayne County, Oakland County, Macomb County (Detroit metro area)</p>
+        <p style="font-size:0.8rem;color:var(--navy);font-weight:600;margin-top:0.5rem;">ZIP Codes: 48201, 48202, 48226, 48227, 48228, 48235</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ POST JOB PAGE ═════════════════════════════════════ -->
+<div id="page-postjob" class="page">
+  <div class="page-header"><h1>Post a Job</h1><p>Find the right contractor in minutes</p></div>
+  <div class="postjob-wrap">
+    <div class="progress-bar">
+      <div class="prog-step active" id="prog-1">1. Job Details</div>
+      <div class="prog-step" id="prog-2">2. Budget</div>
+      <div class="prog-step" id="prog-3">3. Review & Submit</div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="form-step active" id="step-1">
+      <div class="form-group"><label>Job Title *</label><input type="text" placeholder="e.g. Commercial Electrical Panel Upgrade"></div>
+      <div class="form-group"><label>Trade Type *</label><select><option value="">Select a trade...</option><option>HVAC</option><option>Electrical</option><option>Plumbing</option><option>Landscaping</option><option>Roofing</option><option>Concrete</option><option>Cleaning</option><option>General Contracting</option></select></div>
+      <div class="form-group"><label>Job Description *</label><textarea placeholder="Describe the work in detail -- scope, any special requirements, access notes..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Job Site Address</label><input type="text" placeholder="123 Main St, Detroit, MI"></div>
+        <div class="form-group"><label>ZIP Code</label><input type="text" placeholder="48226"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Start Date</label><input type="date"></div>
+        <div class="form-group"><label>End Date</label><input type="date"></div>
+      </div>
+      <div class="form-actions"><div></div><button class="btn-next" onclick="nextStep(2)">Next: Budget &rarr;</button></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="form-step" id="step-2">
+      <div class="form-row">
+        <div class="form-group"><label>Budget Minimum ($)</label><input type="number" placeholder="e.g. 5000"></div>
+        <div class="form-group"><label>Budget Maximum ($)</label><input type="number" placeholder="e.g. 10000"></div>
+      </div>
+      <div class="form-group">
+        <label>Payment Type</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;font-weight:normal;"><input type="radio" name="ptype" checked> Fixed Price (one flat amount for the whole job)</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-top:0.4rem;font-weight:normal;"><input type="radio" name="ptype"> Hourly Rate (billed per hour worked)</label>
+      </div>
+      <div class="form-group"><label>Special Requirements or Notes</label><textarea placeholder="Government contract? Specific certifications needed? Bonding required? Access restrictions?"></textarea></div>
+      <div class="form-actions"><button class="btn-back" onclick="nextStep(1)">&larr; Back</button><button class="btn-next" onclick="nextStep(3)">Next: Review &rarr;</button></div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="form-step" id="step-3">
+      <h3 style="margin-bottom:1rem;color:var(--navy);">Review Your Job Posting</h3>
+      <div class="review-box"><h4>Job Details</h4><p>Commercial Electrical Panel Upgrade</p><p style="color:var(--text-light);font-size:0.85rem;margin-top:0.25rem;">48226 &bull; Start: Dec 1, 2026</p></div>
+      <div class="review-box"><h4>Trade</h4><p>Electrical</p></div>
+      <div class="review-box"><h4>Budget</h4><p>$5,000 -- $10,000 (Fixed Price)</p></div>
+      <div style="background:#E8F4E8;border:1px solid #86efac;border-radius:8px;padding:1rem;margin-bottom:1.25rem;font-size:0.85rem;color:#15803d;">
+        <strong>What happens next:</strong> We will instantly match you with qualified electricians in the Detroit metro area. You will receive bids within 24 hours. Payment is held securely in escrow -- released only when you approve the completed work.
+      </div>
+      <div class="form-actions"><button class="btn-back" onclick="nextStep(2)">&larr; Back</button><button class="btn-submit" onclick="submitJob()">Submit Job Posting ✓</button></div>
+    </div>
+
+    <!-- Success -->
+    <div class="form-step" id="step-success">
+      <div class="success-state">
+        <div class="success-icon">✅</div>
+        <h2>Your Job Has Been Posted!</h2>
+        <p>We are matching you with qualified contractors right now. You will receive bids within 24 hours. We will email you at the address you registered with.</p>
+        <button class="btn-next" onclick="showPage('contractors')" style="margin-right:0.75rem;">Browse Contractors</button>
+        <button class="btn-back" onclick="showPage('landing')">Back to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD PAGE ════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <div class="dashboard-wrap">
+    <div class="sidebar">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">MT</div>
+        <div class="sidebar-name">Marcus Thompson</div>
+        <div class="sub-badge">● Active Subscriber</div>
+      </div>
+      <div class="sidebar-nav">
+        <a class="active">📊 &nbsp; Overview</a>
+        <a>📋 &nbsp; My Bids (3)</a>
+        <a>🔨 &nbsp; Active Jobs</a>
+        <a>💰 &nbsp; Earnings</a>
+        <a>👤 &nbsp; My Profile</a>
+        <a>💳 &nbsp; Subscription</a>
+      </div>
+    </div>
+    <div class="dash-main">
+      <div class="dash-title">Good morning, Marcus 👋</div>
+      <div class="stat-cards">
+        <div class="stat-card"><div class="sc-label">Active Bids</div><div class="sc-val">3</div><div class="sc-sub">2 awaiting response</div></div>
+        <div class="stat-card"><div class="sc-label">Jobs This Month</div><div class="sc-val">2</div><div class="sc-sub">1 in progress</div></div>
+        <div class="stat-card"><div class="sc-label">Earnings MTD</div><div class="sc-val">$4,250</div><div class="sc-sub">+18% vs last month</div></div>
+        <div class="stat-card" style="border-color:var(--gold)"><div class="sc-label">Your Rating</div><div class="sc-val" style="color:var(--gold)">4.8 ⭐</div><div class="sc-sub">47 reviews</div></div>
+      </div>
+      <div class="dash-section">
+        <h3>🔔 New Opportunities (3 matches)</h3>
+        <div class="job-opp">
+          <div class="job-opp-info">
+            <div class="job-opp-title">Wayne State Dorm -- Panel Upgrade (3 buildings)</div>
+            <div class="job-opp-meta">⚡ Electrical &bull; 48202, Detroit &bull; Posted 2 hours ago</div>
+          </div>
+          <div class="job-opp-right">
+            <div class="job-budget">$18,000 - $28,000</div>
+            <div class="job-deadline">⏰ Bids due in 3 days</div>
+            <div class="job-opp-btns">
+              <button class="btn-sm-outline">View</button>
+              <button class="btn-sm-navy">Submit Bid</button>
+            </div>
+          </div>
+        </div>
+        <div class="job-opp">
+          <div class="job-opp-info">
+            <div class="job-opp-title">Commercial Warehouse LED Retrofit -- Hamtramck</div>
+            <div class="job-opp-meta">⚡ Electrical &bull; 48212, Hamtramck &bull; Posted yesterday</div>
+          </div>
+          <div class="job-opp-right">
+            <div class="job-budget">$7,500 - $12,000</div>
+            <div class="job-deadline">⏰ Bids due in 5 days</div>
+            <div class="job-opp-btns">
+              <button class="btn-sm-outline">View</button>
+              <button class="btn-sm-navy">Submit Bid</button>
+            </div>
+          </div>
+        </div>
+        <div class="job-opp">
+          <div class="job-opp-info">
+            <div class="job-opp-title">Charter School -- Generator Install (Emergency)</div>
+            <div class="job-opp-meta">⚡ Electrical &bull; 48227, Detroit &bull; Posted 4 hours ago</div>
+          </div>
+          <div class="job-opp-right">
+            <div class="job-budget">$15,000 - $22,000</div>
+            <div class="job-deadline" style="background:#fee2e2;color:#991b1b;">🔴 Urgent -- 24hrs</div>
+            <div class="job-opp-btns">
+              <button class="btn-sm-outline">View</button>
+              <button class="btn-sm-navy">Submit Bid</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-section">
+        <h3>💰 Recent Earnings</h3>
+        <table class="earnings-table">
+          <thead><tr><th>Job</th><th>Client</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Mack Elementary LED Retrofit</td><td>Detroit Public Schools</td><td style="font-weight:700">$3,200</td><td>Nov 1, 2026</td><td><span class="status-paid">Paid</span></td></tr>
+            <tr><td>Panel Upgrade -- E. Jefferson</td><td>James W. (Property Mgr)</td><td style="font-weight:700">$1,050</td><td>Oct 28, 2026</td><td><span class="status-paid">Paid</span></td></tr>
+            <tr><td>Emergency Rewiring -- UPAD</td><td>Detroit 90/90</td><td style="font-weight:700">$2,800</td><td>Oct 15, 2026</td><td><span class="status-paid">Paid</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Contractor data
+  const contractors = [
+    { name:'Marcus Thompson', initials:'MT', color:'#1A355E', trade:'Electrical', rating:4.8, reviews:47, rate:'$85-120/hr', govReady:true },
+    { name:'Deja Williams', initials:'DW', color:'#B88620', trade:'HVAC', rating:4.6, reviews:31, rate:'$75-110/hr', govReady:true },
+    { name:'Ray Johnson', initials:'RJ', color:'#059669', trade:'Plumbing', rating:4.9, reviews:63, rate:'$90-130/hr', govReady:true },
+    { name:'Tamika Brooks', initials:'TB', color:'#7c3aed', trade:'Landscaping', rating:4.7, reviews:28, rate:'$55-80/hr', govReady:false },
+    { name:'Carlos Rivera', initials:'CR', color:'#dc2626', trade:'Roofing', rating:4.5, reviews:19, rate:'$70-100/hr', govReady:true },
+    { name:'Antoine Davis', initials:'AD', color:'#0369a1', trade:'General Contracting', rating:4.8, reviews:52, rate:'$80-120/hr', govReady:true },
+    { name:'Lisa Chen', initials:'LC', color:'#be185d', trade:'Cleaning', rating:4.9, reviews:84, rate:'$45-65/hr', govReady:false },
+    { name:'James Porter', initials:'JP', color:'#92400e', trade:'Concrete', rating:4.4, reviews:22, rate:'$65-95/hr', govReady:true },
+  ];
+
+  function renderContractors() {
+    const grid = document.getElementById('contractor-grid');
+    grid.innerHTML = contractors.map(c => `
+      <div class="c-card">
+        <div class="c-card-top">
+          <div class="c-avatar" style="background:${c.color}">${c.initials}</div>
+          <div class="c-info"><div class="name">${c.name}</div><div class="rate">${c.rate}</div></div>
+        </div>
+        <div class="c-badges">
+          <span class="badge badge-trade">${c.trade}</span>
+          <span class="badge badge-avail">Available</span>
+          ${c.govReady ? '<span class="badge badge-gov">Gov-Ready</span>' : ''}
+        </div>
+        <div class="c-rating">
+          <span class="stars">${'★'.repeat(Math.floor(c.rating))}${'☆'.repeat(5-Math.floor(c.rating))}</span>
+          <span class="num">${c.rating}</span>
+          <span class="cnt">(${c.reviews})</span>
+        </div>
+        <div class="c-btns">
+          <button class="btn-sm-navy" onclick="showPage('profile')">View Profile</button>
+          <button class="btn-sm-outline" onclick="showPage('postjob')">Request Quote</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    window.scrollTo(0, 0);
+    if (page === 'contractors') renderContractors();
+    if (page === 'postjob') resetForm();
+  }
+
+  function resetForm() {
+    ['step-1','step-2','step-3','step-success'].forEach((s,i) => {
+      document.getElementById(s).classList.toggle('active', i === 0);
+    });
+    ['prog-1','prog-2','prog-3'].forEach((p,i) => {
+      document.getElementById(p).className = 'prog-step' + (i === 0 ? ' active' : '');
+    });
+  }
+
+  function nextStep(step) {
+    ['step-1','step-2','step-3','step-success'].forEach(s => document.getElementById(s).classList.remove('active'));
+    document.getElementById('step-' + step).classList.add('active');
+    ['prog-1','prog-2','prog-3'].forEach((p, i) => {
+      const el = document.getElementById(p);
+      if (i + 1 < step) el.className = 'prog-step done';
+      else if (i + 1 === step) el.className = 'prog-step active';
+      else el.className = 'prog-step';
+    });
+    window.scrollTo(0, 0);
+  }
+
+  function submitJob() {
+    ['step-1','step-2','step-3'].forEach(s => document.getElementById(s).classList.remove('active'));
+    document.getElementById('step-success').classList.add('active');
+    ['prog-1','prog-2','prog-3'].forEach(p => document.getElementById(p).className = 'prog-step done');
+  }
+
+  // Add dashboard link to nav
+  document.querySelector('.nav-actions').insertAdjacentHTML('afterbegin', 
+    '<button class="btn-ghost" onclick="showPage(\'dashboard\')" style="margin-right:0.25rem">Dashboard</button>');
+</script>
+</body>
+</html>
